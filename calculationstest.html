@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+        /* #result {
+            color: white;
+        } */
+        .centered-button {
+            display: flex;
+            justify-content: center;
+        }
+        .center-text {
+            text-align: center;
+        }
+        #step2 {
+            display: none;
+        }
+        input{
+          margin: auto;
+          display: block;
+          text-align: center;
+        }
+    </style>
+</head>
+<body>
+  <p class="paragraph-2 center-text">Enter a number to be factored (N):</p>
+  <input class="center-text" id="N" type="number">
+
+  <p class="paragraph-2 center-text">Enter another number (a):</p>
+  <input class="center-text" id="a" type="number">
+
+  <div class="centered-button">
+    <button onclick="calculate()">Calculate</button>
+  </div>
+<div id="step2">
+  <h4 class="heading-7 center-text">Step 2: Modular Exponentiation</h4>
+  <p class="paragraph-2 center-text">After initializing N and a, we find the greatest common divisor (gcd) of a and N. <br> We use Euclid&#x27;s algorithm to calculate gcd(a,N) and so use the formula f(x) = a^x mod N. <br> If a^1 mod N = 1, then a is a factor of N and we are done! Although, if not, we will continue this process until gcd(a,N) = 1<br/></p>
+  <p class="paragraph-2 center-text" id="result"></p>
+</div>
+
+
+<script>
+function calculate() {
+  var N = document.getElementById("N").value;
+  var a = document.getElementById("a").value;
+  document.getElementById('step2').style.display = 'block';
+
+  // Check if n is greater than 1
+  if (N <= 1) {
+    alert('Please enter a number greater than 1');
+    return;
+  }
+
+  // Check if n is a prime number
+  if (isPrime(N)) {
+    alert('Please enter a composite number (not a prime number)');
+    return;
+  }
+
+  // Find the period
+  var r = findPeriod(a, N);
+  
+  // Calculate p and q
+  var ar2Minus1 = (Math.pow(a, r/2) - 1) % N;
+  var ar2Plus1 = (Math.pow(a, r/2) + 1) % N;
+  var p = gcd(N, ar2Minus1);
+  var q = gcd(N, ar2Plus1);
+
+  var stepStr = "Let N = " + N + " and a = " + a + " <br>";
+  stepStr += "We start with the equation a^r = mN + 1, where mN is some multiple of N. <br>";
+  var r2 = 1;
+  var mod = 0;
+  while (mod != 1){
+    mod = Math.pow(a, r2)%N;
+    stepStr += a + "^" + r2 + " = " + mod + " mod " + N + ". <br>";
+    r2 += 1;
+  }
+  stepStr += "We can see that when r = " + r + ", " + Math.pow(a, r) + " mod " + N + " = 1. <br> ";
+  stepStr += "Then, we calculate (a^(r/2) + 1) = " + ar2Plus1 + " and (a^(r/2) - 1) = " + ar2Minus1 + ". <br>";
+  stepStr += "The greatest common divisor of (a^(r/2) + 1) and N is " + p + ", and for (a^(r/2) - 1) and N is " + q + ". <br>";
+  stepStr += "So, the factors of " + N + " are " + p + " and " + q + ".";
+
+  document.getElementById("result").innerHTML = stepStr;
+}
+
+// Helper function to calculate the period
+function findPeriod(a, N) {
+  var val = a;
+  var r = 1;
+  while (val % N != 1) {
+    val = (val * a) % N;
+    r++;
+  }
+  return r;
+}
+
+// Helper function to calculate the greatest common divisor (gcd)
+function gcd(a, b) {
+  if (b == 0) {
+    return a;
+  } else {
+    return gcd(b, a % b);
+  }
+}
+
+function isPrime(N) {
+  if (N <= 1) {
+      return false;
+  }
+  if (N <= 3) {
+      return true;
+  }
+  if (N % 2 === 0 || N % 3 === 0) {
+      return false;
+  }
+  var i = 5;
+  while (i * i <= N) {
+      if (N % i === 0 || N % (i + 2) === 0) {
+          return false;
+      }
+      i += 6;
+  }
+  return true;
+}
+</script>
+</body>
+</html>
